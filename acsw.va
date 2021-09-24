@@ -1,0 +1,42 @@
+module AC_SW(pos,neg,trgp,trgn);
+inout pos,neg;
+input trgp,trgn;
+
+electrical pos, neg;
+electrical trgp, trgn;
+
+parameter real RON    = 1m;
+parameter real ROFF   = 1G;
+parameter real TCROSS = 1u;
+
+parameter real VDIG = 1;
+
+real Current;
+integer Status;
+
+analog begin
+
+    @(initial_model ) 
+        if( analysis("restart") )
+	    Status = 0;
+
+    if( v(trgp,trgn) > 0.5 * VDIG ) begin
+        Status = 1;
+	Current = v(pos,neg) / RON;
+    end
+    else if( Status == 3 ) 
+	Current = v(pos,neg) / ROFF;
+    else begin
+        Status = 2;
+	Current = v(pos,neg) / RON;
+    end
+
+    if( Status == 2 )
+        @(cross( Current, 0, TCROSS )) 
+	    Status = 3;
+
+    i(pos,neg) <+ Current;
+
+end
+
+endmodule
