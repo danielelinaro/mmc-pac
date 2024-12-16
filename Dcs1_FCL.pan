@@ -45,7 +45,7 @@ parameters VAC_PCC_A1=145k/sqrt(3)           \ // NOMINAL MMC AC LINE-TO-GROUND 
 
 parameters TCROSS=10n TRISE=1u TSTOP=50                 // DURATION OF SIMULATION
 
-options rawkeep=yes topcheck=2 compile=2
+options rawkeep=yes topcheck=2 protected=yes ;compile=2
 
 		   
 //-----------------------------------------
@@ -56,7 +56,7 @@ Dc dc    uic=2 partitioner=0 print=no printnodes=0 annotate=3+0*0x8 damping=1
 Tr tran  stop=TSTOP annotate=5 restart=1 uic=2 \
 	 devvars=yes cmin=false method=2 maxord=2 \
 	 iabstol=10u vreltol=1m ireltol=1m vabstol=1m \
-	 sparse=2 chgtol=no supernode=1 saman=0 skip=2 \
+	 sparse=2 chgcheck=no supernode=1 saman=0 skip=2 \
 	 maxiter=100 partitioner=0 tmax=0.1m tmin=1n acntrl=3 
 
 Save control begin

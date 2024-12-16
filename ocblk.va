@@ -1,0 +1,52 @@
+module OCBLK(blocked,idc_pos,idc_neg);
+
+input idc_pos, idc_neg;
+output blocked;
+
+electrical blocked,idc_pos,idc_neg;
+
+parameter real VDIG  = 1;
+parameter real ITH   = 2.5k;
+parameter real TON   = 200m;
+parameter real DELAY = 40u;
+
+integer Blocked;
+integer Fault_found;
+real Max;
+real Time_fault;
+
+analog begin
+
+    @(initial_model) 
+        if( analysis("restart") ) begin
+        Blocked = 0;
+	Fault_found = 0;
+    end
+
+    if( $abstime > TON ) begin
+
+        if( abs( v(idc_pos) ) > abs( v(idc_neg) ) )
+	    Max = abs( v(idc_pos) );
+	else
+	    Max = abs( v(idc_neg) );
+	end
+
+	if (Fault_found == 0) begin
+		@(cross( Max - ITH, 1, 1n) ) begin 
+	  	Fault_found = 1;
+		Blocked = 0;
+		Time_fault = $abstime; // Set the time instant of the application of the 
+		end
+	end
+
+    if (Fault_found == 1) begin
+	@(timer(Time_fault + DELAY)) begin
+	Blocked = 1;
+	end
+    end
+
+    v(blocked) <+ Blocked;
+
+end
+
+endmodule

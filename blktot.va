@@ -1,0 +1,63 @@
+module BLKTOT(blocked,acon,on,ac_blocked,dc_blocked);
+
+input ac_blocked, dc_blocked, on;
+output blocked, acon;
+
+electrical ac_blocked, dc_blocked, blocked, acon, on;
+
+parameter real VDIG  = 1;
+parameter real TON   = 60m;
+parameter real DELAY = 60m;
+
+integer Blocked;
+integer Blk_found;
+real Max;
+real Time_blk;
+
+analog begin
+
+    @(initial_model) 
+        if( analysis("restart") ) begin
+	    //v(blocked)  <+ 0;
+	    //v(acon)     <+ 0;
+	    Blk_found = 0;
+	    Time_blk  = 0;
+	end
+
+    if( $abstime > TON ) begin
+
+    	v(blocked) <+ (v(ac_blocked) > 0.5*VDIG || v(dc_blocked) > 0.5*VDIG) ? VDIG : 0;
+	
+	if (Blk_found == 0 && v(dc_blocked) == 1) begin
+		Time_blk = $abstime;
+		Blk_found = 1;
+	end
+
+
+	if (v(dc_blocked) == 1) begin
+		if ($abstime > Time_blk + DELAY) begin
+			//v(acon) <+ (v(on) > 0.5*VDIG && v(blocked) < 0.5*VDIG) ? VDIG : 0;
+			v(acon) <+ (v(blocked) < 0.5*VDIG) ? VDIG : 0;
+		end else begin
+			v(acon) <+ VDIG;
+		end
+
+	end else if (v(ac_blocked) == 1) begin
+		//v(acon) <+ (v(on) > 0.5*VDIG && v(blocked) < 0.5*VDIG) ? VDIG : 0;
+		v(acon) <+ (v(blocked) < 0.5*VDIG) ? VDIG : 0;
+	end else begin
+		//v(acon) <+ (v(on) > 0.5*VDIG && v(blocked) < 0.5*VDIG) ? VDIG : 0;
+		v(acon) <+ (v(blocked) < 0.5*VDIG) ? VDIG : 0;
+	end
+
+    end else begin
+        v(blocked)  <+ 0;
+	//v(acon) <+ (v(on) > 0.5*VDIG && v(blocked) < 0.5*VDIG) ? VDIG : 0;
+	v(acon) <+ (v(blocked) < 0.5*VDIG) ? VDIG : 0;
+	
+
+   end
+
+end
+
+endmodule

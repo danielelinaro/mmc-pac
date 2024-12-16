@@ -42,7 +42,7 @@ parameters VAC_PCC_A1=145k/sqrt(3)           \ // NOMINAL MMC AC LINE-TO-GROUND 
 //-----------------------------------------
 
 parameters TCROSS=10n TSTOP=2
-options rawkeep=yes topcheck=2 compile=2
+options rawkeep=yes topcheck=2 protected=yes outintnodes=true
 
 		   
 //-----------------------------------------
@@ -53,11 +53,11 @@ Dc dc    uic=2 partitioner=0 print=no printnodes=0 annotate=3+0*0x8 ;load="PF.op
 Tr tran  stop=TSTOP annotate=5 restart=1 uic=2 \
 	 devvars=yes cmin=false method=2 maxord=2 \
 	 iabstol=10u vreltol=1m ireltol=1m vabstol=1m \
-	 sparse=2 chgtol=no supernode=1 saman=0 skip=2 \
+	 sparse=2 chgcheck=no supernode=0 saman=0 skip=2 \
 	 maxiter=100 timepoints=5u forcetps=true tmax=0.1m tmin=1n acntrl=3 
 
 Sh shooting fund=F0 restart=no floquet=yes tmin=0.5u method=2 maxord=2 \
-            iabstol=10u sparse=1 solver=1 tmax=1m acntrl=3
+            iabstol=10u sparse=1 solver=1 tmax=0.1m acntrl=3 ereltol=5m
 
 Alt1A alter instance=B0C1.Eg1 param="pacmag" value=1 invalidate=no
 PAc  pac start=100m stop=7*F0 dec=1000 parsolver=1

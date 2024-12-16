@@ -1,0 +1,45 @@
+module UVBLK(blocked,vd,vq);
+input vd,vq;
+output blocked;
+
+electrical blocked,vd,vq;
+
+parameter real TD   = 20m;
+parameter real VDIG = 1;
+parameter real THL  = 0.1; 
+parameter real TON  = 70m;
+parameter real DELAY = 40u;
+
+integer Fault_found;
+integer Blocked;
+real T0, Mag;
+
+analog begin
+
+    @(initial_model) 
+        if( analysis("restart") ) begin
+        Blocked = 0;
+	T0 = 0;
+	Fault_found = 0;
+    end
+
+    if( $abstime > TON ) begin
+
+	Mag = sqrt( v(vd)*v(vd) + v(vq)*v(vq) );
+ 	@(cross(Mag - THL, -1, 1n) ) T0 = $abstime;
+
+	if (Fault_found == 0) begin
+	    	if( timer( T0 + TD ) ) begin
+			if( Mag < THL ) begin
+				Blocked = 1;
+		    		Fault_found = 1;
+	   		 end
+    		end
+	end
+   end 
+
+v(blocked) <+ Blocked;
+
+end
+endmodule
+

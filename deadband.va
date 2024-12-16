@@ -1,0 +1,54 @@
+module DEADBAND(vdc_mea,delta_id,deadband_on);
+
+input vdc_mea;
+output delta_id, deadband_on;
+
+electrical vdc_mea,delta_id, deadband_on;
+
+parameter real VDC_NOM = 1;
+parameter real VDC_MIN = 0.95*VDC_NOM;
+parameter real VDC_MAX = 1.05*VDC_NOM;
+parameter real KP_DB   = 10;
+parameter real TON     = 20m;
+analog begin
+
+    if( $abstime > TON ) begin
+	if ( v(vdc_mea) > VDC_MAX) begin
+		v(delta_id) <+ (v(vdc_mea) - VDC_MAX)*(-KP_DB);
+		v(deadband_on) <+ 0;
+    	end else if ( v(vdc_mea) < VDC_MIN) begin
+		v(delta_id) <+ (v(vdc_mea) - VDC_MIN)*(-KP_DB);
+		v(deadband_on) <+ 0;
+    	end else begin
+		v(delta_id)    <+ 0;
+		v(deadband_on) <+ 0;
+    	end
+     end
+     else begin
+     		v(delta_id)    <+ 0;
+		v(deadband_on) <+ 0;
+     end
+end
+endmodule
+
+
+//    @(initial_model) 
+//        if( analysis("restart") ) begin
+//	    v(delta_id) <+ 0;
+//	    v(deadband_on) <+ 0;
+//	end
+
+//    if( $abstime > TON ) begin
+//	if ( v(vdc_mea) > VDC_MAX) begin
+//		v(delta_id) <+ (v(vdc_mea) - VDC_MAX)*(-KP_DB);
+//		v(deadband_on) <+ 1;
+//    	end else if ( v(vdc_mea) < VDC_MIN) begin
+//		v(delta_id) <+ (v(vdc_mea) - VDC_MIN)*(-KP_DB);
+//		v(deadband_on) <+ 1;
+//    	end else begin
+//		v(delta_id) <+ 0;
+//		v(deadband_on) <+ 0;
+//    	end
+//     end
+//end
+//endmodule

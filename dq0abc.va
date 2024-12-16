@@ -1,0 +1,29 @@
+module DQ0ABC(xa,xb,xc,xd,xq,x0,omega);
+input  xd,xq,x0,omega;
+output xa,xb,xc;
+
+electrical xd,xq,x0,omega;
+electrical xa,xb,xc;
+
+parameter real GAIN = 1;
+parameter real TETA_GAIN = 1;
+
+analog begin
+
+v(xa) <+ GAIN*(v(xd)*cos(v(omega)*$abstime*TETA_GAIN)          -
+               v(xq)*sin(v(omega)*$abstime*TETA_GAIN)          +
+	       v(x0));
+
+v(xb) <+ GAIN*(v(xd)*cos(v(omega)*$abstime*TETA_GAIN - 2*pi/3) -
+	       v(xq)*sin(v(omega)*$abstime*TETA_GAIN - 2*pi/3) +
+	       v(x0));
+
+v(xc) <+ GAIN*(v(xd)*cos(v(omega)*$abstime*TETA_GAIN + 2*pi/3) -
+	       v(xq)*sin(v(omega)*$abstime*TETA_GAIN + 2*pi/3) +
+	       v(x0));
+
+end
+
+endmodule
+
+

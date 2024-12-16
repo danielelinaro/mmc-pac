@@ -5,8 +5,8 @@ input xa,xb,xc,omega;
 electrical xd,xq;
 electrical xa,xb,xc,omega;
 
-parameter real GAIN = 1      alterable;
-parameter real TETA_GAIN = 1 alterable;
+parameter real GAIN = 1;
+parameter real TETA_GAIN = 1;
 
 analog begin
 
